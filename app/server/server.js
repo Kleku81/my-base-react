@@ -29,8 +29,8 @@ app.get("/", (req, res) => {
 
 //require('../app/routes/auth.routes')(app);
 //require('../app/routes/user.routes')(app);
-require('../routes/auth.routes')(app);
-require('../routes/user.routes')(app);
+//require('../routes/auth.routes')(app);
+//require('../routes/user.routes')(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 // app.listen(PORT, () => {
@@ -60,6 +60,9 @@ const getApiAndEmit = socket => {
     // Emitting a new message. Will be consumed by the client
     socket.emit("FromAPI", i++);
 };
+
+const router = require("../routes/index")(io);
+app.use("/", router);
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
