@@ -3,9 +3,9 @@
 // const cors = require("cors");
 // const socketIo = require("socket.io");
 // const http = require("http");
-const dbConfig = require("./app/config/db.config.js");
-const server = require("./app/server/server.js");
-//const dbService = require("./app/dbService/dbService.js");
+//const dbConfig = require("./app/config/db.config.js");
+const server = require("./app/server/server");
+const dbService = require("./app/dao/db.service");
 //
 
 
@@ -65,58 +65,58 @@ const server = require("./app/server/server.js");
 //   socket.emit("FromAPI", i++);
 // };
 
-const db = require("./app/models");
-const Role = db.role;
+// const db = require("./app/models");
+// const Role = db.role;
 
-db.mongoose
-    .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(() => {
-        console.log("Successfully connect to MongoDB.");
-        initial();
-    })
-    .catch(err => {
-        console.error("Connection error", err);
-        process.exit();
-    });
+// db.mongoose
+//     .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+//         useNewUrlParser: true,
+//         useUnifiedTopology: true
+//     })
+//     .then(() => {
+//         console.log("Successfully connect to MongoDB.");
+//         initial();
+//     })
+//     .catch(err => {
+//         console.error("Connection error", err);
+//         process.exit();
+//     });
 
-function initial() {
-    Role.estimatedDocumentCount((err, count) => {
-        if (!err && count === 0) {
-            new Role({
-                name: "user"
-            }).save(err => {
-                if (err) {
-                    console.log("error", err);
-                }
+// function initial() {
+//     Role.estimatedDocumentCount((err, count) => {
+//         if (!err && count === 0) {
+//             new Role({
+//                 name: "user"
+//             }).save(err => {
+//                 if (err) {
+//                     console.log("error", err);
+//                 }
 
-                console.log("added 'user' to roles collection");
-            });
+//                 console.log("added 'user' to roles collection");
+//             });
 
-            new Role({
-                name: "moderator"
-            }).save(err => {
-                if (err) {
-                    console.log("error", err);
-                }
+//             new Role({
+//                 name: "moderator"
+//             }).save(err => {
+//                 if (err) {
+//                     console.log("error", err);
+//                 }
 
-                console.log("added 'moderator' to roles collection");
-            });
+//                 console.log("added 'moderator' to roles collection");
+//             });
 
-            new Role({
-                name: "admin"
-            }).save(err => {
-                if (err) {
-                    console.log("error", err);
-                }
+//             new Role({
+//                 name: "admin"
+//             }).save(err => {
+//                 if (err) {
+//                     console.log("error", err);
+//                 }
 
-                console.log("added 'admin' to roles collection");
-            });
-        }
-    });
-}
+//                 console.log("added 'admin' to roles collection");
+//             });
+//         }
+//     });
+// }
 
 //server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 

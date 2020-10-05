@@ -1,6 +1,6 @@
-const dbConfig = require("../app/config/db.config.js");
+const dbConfig = require("../config/db.config.js");
 
-const db = require("../app/models");
+const db = require("../models");
 const Role = db.role;
 
 db.mongoose
