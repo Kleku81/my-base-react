@@ -4,8 +4,9 @@
 // const socketIo = require("socket.io");
 // const http = require("http");
 //const dbConfig = require("./app/config/db.config.js");
-const server = require("./app/server/server");
 const dbService = require("./app/dao/db.service");
+const server = require("./app/server/server");
+
 //
 
 

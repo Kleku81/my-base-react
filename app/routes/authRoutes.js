@@ -5,13 +5,13 @@ const router = require("express").Router(),
   controller = require("../controllers/auth.controller");
 
 
-router.post("/api/auth/signup",
+router.post("/signup",
   [
     verifySignUp.checkDuplicateUsernameOrEmail,
     verifySignUp.checkRolesExisted
   ], controller.signup);
-router.post("/api/auth/signin", controller.signin);
-
+router.post("/signin", controller.signin);
+router.get("/test", (req,res)=> res.send("test /api/auth/test") );
 
 
 module.exports = router;

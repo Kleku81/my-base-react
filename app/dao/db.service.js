@@ -3,6 +3,8 @@ const dbConfig = require("../config/db.config.js");
 const db = require("../models");
 const Role = db.role;
 
+db.mongoose.Promise = global.Promise;
+
 db.mongoose
     .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
         useNewUrlParser: true,
