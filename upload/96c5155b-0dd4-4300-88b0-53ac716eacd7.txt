@@ -1,0 +1,2 @@
+"1.0.0.0/8";"Nie";"ab2def";"f";"";"";"";""----> Not added. Reason:E11000 duplicate key error collection: bezkoder_db.prefixipv4 index: prefix_1_dbName_1 dup key: { prefix: "1.0.0.0/8", dbName: "testipv4" }
+"9.0.0.0/8";"Nie";"ab9def";"f";"";"";"";""----> Not added. Reason:E11000 duplicate key error collection: bezkoder_db.prefixipv4 index: prefix_1_dbName_1 dup key: { prefix: "9.0.0.0/8", dbName: "testipv4" }
