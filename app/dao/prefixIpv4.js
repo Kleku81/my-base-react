@@ -44,7 +44,7 @@ module.exports =  {
         {
 
             var adress = helper.takeAddress(prefix.prefix);
-            var prefixes =  await PrefixIpv4.find({ "parent": "#" });
+            var prefixes =  await PrefixIpv4.find({ "parent": "#", "dbName": dbName  });
             var prefix_iter;
             var matched_prefix_up = null;
             var matched_prefix_down = [];
