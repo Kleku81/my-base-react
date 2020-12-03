@@ -29,7 +29,7 @@ var storage = multer.diskStorage({
 var uploadmulter = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype == "application/vnd.ms-excel") {
+    if (file.mimetype == "application/vnd.ms-excel!") {
       cb(null, true);
     } else {
       cb(null, false);
