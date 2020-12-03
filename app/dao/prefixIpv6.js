@@ -20,12 +20,12 @@ module.exports =  {
         //await prefixDAO.saveAddress(sline[0], sline[3], sline[4], sline[5], sline[6], sline[7]);
         if(!helper.ipv6RegExp(sline[0]))
         {
-            throw new Error('Linia zawiera niepoprawny adres IPv4!');
+            throw new Error('Linia zawiera niepoprawny adres IPv6!');
         }
 
         if(!helper.ipCidrTest(sline[0], "ipv6"))
         {
-            throw new Error('Linia zawiera niepoprawny CIDR IPv4!');
+            throw new Error('Linia zawiera niepoprawny CIDR IPv6!');
         }
         
 
