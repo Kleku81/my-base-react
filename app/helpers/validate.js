@@ -7,6 +7,8 @@ console.log('PrefixIpv6', PrefixIpv6);
 
 const ip = require('ip');
 const ip6addr = require('ip6addr');
+const uuid = require('uuid-random');
+const fs = require('fs');
 //const { exists } = require('../models/prefixIpv6.js');
 //const PrefixIpv4 = require("../models/prefixIpv4");
 
@@ -25,6 +27,32 @@ const validator = (body, rules, customMessages, callback) => {
 };
 
 module.exports = validator;*/
+
+const sortSourceIpv6 = (a, b) => {
+
+    a = a.prefix_full.split(/[\:,\/]/)
+        .map((value) => parseInt(value, 16));
+    b = b.prefix_full.split(/[\:,\/]/)
+        .map((value) => parseInt(value, 16));
+
+    return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] || a[5] - b[5] || a[6] - b[6] || a[7] - b[7] || a[8] - b[8]
+
+}
+
+const generateList1 =  (data,dataList) => {
+
+    //const dataList = [];
+    for (let i = 0; i < data.length; i++) {
+        const node = data[i];
+        //const { key, title } = node;
+        
+        dataList.push(node);
+        if (node.children) {
+            generateList1(node.children,dataList);
+        }
+    }
+    //return dataList;
+  }
 
 module.exports = {
 
@@ -86,7 +114,78 @@ module.exports = {
         else
             return Promise.reject();
 
-    }
+    },
+
+    list_to_tree: (list) => {
+
+        var start_ltt = Date.now();
+      
+        var map = {}, node, roots = [], i;
+        
+        for (i = 0; i < list.length; i += 1) {
+          map[list[i]._doc.prefix] = i; // initialize the map
+          list[i].children = []; // initialize the children
+        }
+        
+        for (i = 0; i < list.length; i += 1) {
+          node = list[i];
+          if (node._doc.parent !== "#") {
+            // if you have dangling branches check that map[node.parentId] exists
+            list[map[node._doc.parent]].children.push(node);
+          } else {
+            roots.push(node);
+          }
+        }
+      
+        var end_ltt = Date.now();
+        console.log(` Execution list_to_tree: ${end_ltt - start_ltt} ms`);
+        return roots;
+      },
+
+      sortedIndex:(array, prefix) => {
+        var low = 0,
+            high = array.length;
+    
+        while (low < high) {
+            var mid = (low + high) >>> 1;
+            if (sortSourceIpv6(array[mid],prefix) < 0) low = mid + 1;
+            else high = mid;
+        }
+        return low;
+    },
+
+
+
+    generateList: (data,dataList) => {
+
+        //const dataList = [];
+        for (let i = 0; i < data.length; i++) {
+            const node = data[i];
+            //const { key, title } = node;
+            
+            dataList.push(node);
+            if (node.children) {
+                generateList1(node.children,dataList);
+            }
+        }
+        //return dataList;
+      },
+      listFailToFile: (list) => {
+
+        var raport_uuid = uuid();
+        var raport_path = "./upload/" + raport_uuid + ".txt";
+    
+        var file = fs.createWriteStream(raport_path);
+        file.on('error', function (err) { console.log("nie mogę znaleźć ../uploads/") });
+        list.length>0 && list.forEach(function (v) { file.write(`${v} \n`); });
+        file.end();
+
+        return raport_uuid
+
+
+
+
+      }
 }
 
 console.log("module validate finish loading"); 

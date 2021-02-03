@@ -1,0 +1,5 @@
+fd15:f100:f0f:::/56 => Niepoprawny adres IPv6! 
+fda9:b700:1000:11::/64 => Ten prefix juz istnieje 
+fda9:b700:1000:13::/64 => Ten prefix juz istnieje 
+fda9:b700:1000:13::/64 => Ten prefix juz istnieje 
+fda9:b700:1000:13::/64 => Ten prefix juz istnieje 

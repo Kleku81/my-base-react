@@ -4,6 +4,7 @@ mongoose.Promise = global.Promise;
 const db = {};
 
 db.mongoose = mongoose;
+//db.mongoose.set('debug', true);
 
 db.prefixIpv4 = require("./prefixIpv4");
 db.prefixIpv6 = require("./prefixIpv6");

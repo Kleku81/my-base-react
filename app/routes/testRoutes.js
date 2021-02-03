@@ -47,10 +47,10 @@ module.exports = (io) => {
   //   //prefixController.redirectView
   // );
 
-  router.post('/upload',[authJwt.verifyToken, authJwt.isModerator], controller.upload, controller.importload);
+  router.post('/upload',[authJwt.verifyToken, authJwt.isModerator], controller.upload, controller.importload_new_v2);
   router.post('/dbs',[authJwt.verifyToken, authJwt.isModerator], controller.addDbs);
   router.get('/dbs',[authJwt.verifyToken] ,controller.getDbs);
-  router.get('/tree',[authJwt.verifyToken], controller.json, controller.showView);
+  router.get('/tree',/*[authJwt.verifyToken],*/ controller.json, controller.showView);
   router.get('/raport/:id',[authJwt.verifyToken],  controller.raportDownload);
   router.patch('/multiedit',[authJwt.verifyToken, authJwt.isModerator],controller.multiupdate);
   router.patch('/edit',[authJwt.verifyToken, authJwt.isModerator], controller.update);

@@ -62,13 +62,24 @@ const mongoose = require("mongoose"),
   );
 
   prefixipv6Schema.index({prefix: 1, dbName: 1}, {unique: [true, 'Index have to be unique']});
+  prefixipv6Schema.index({parent: 1, dbName: 1});
 
-prefixipv6Schema.virtual("id")
+prefixipv6Schema.virtual("key")
   .get(function () {
     return this.prefix;
   });
 
-prefixipv6Schema.virtual("text")
+  prefixipv6Schema.virtual("id")
+  .get(function () {
+    return this.prefix;
+  });
+
+prefixipv6Schema.virtual("title")
+  .get(function () {
+    return this.prefix + "  " + this.description;
+  });
+
+  prefixipv6Schema.virtual("name")
   .get(function () {
     return this.prefix + "  " + this.description;
   });

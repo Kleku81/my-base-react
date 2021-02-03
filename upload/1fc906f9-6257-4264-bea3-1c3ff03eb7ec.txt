@@ -1,0 +1,1 @@
+"fd15:f100:0f0f:000e::/64";"Nie";"";"";"sieć ULA 0f0f:000e";"ULA";"";""----> Not added. Reason:E11000 duplicate key error collection: bezkoder_db.prefixipv6 index: prefix_1_dbName_1 dup key: { prefix: "fd15:f100:f0f:e::/64", dbName: "testipv6" }
