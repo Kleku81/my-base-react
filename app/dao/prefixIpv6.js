@@ -6,7 +6,7 @@ const ip = require('ip')
 const ip6addr = require('ip6addr')
 const { JSDOM } = require("jsdom");
 const { db } = require("../models/prefixIpv6");
-const { checkPrefixes } =require("../helpers/addRacurention");
+const { checkPrefixes } =require("../helpers/addRacurentionIpv6");
 const { window } = new JSDOM()
 //fs = require('fs');
 

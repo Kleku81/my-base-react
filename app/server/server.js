@@ -39,7 +39,7 @@ const PORT = process.env.PORT || 8080;
 // });
 
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {pingInterval: 600000});
 
 let interval;
 

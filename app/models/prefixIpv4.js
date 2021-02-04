@@ -58,6 +58,11 @@ const mongoose = require("mongoose"),
 
   prefixipv4Schema.index({prefix: 1, dbName: 1}, {unique: [true, 'Index have to be unique']});
 
+  prefixipv4Schema.virtual("key")
+  .get(function () {
+    return this.prefix;
+  });
+
 prefixipv4Schema.virtual("id")
   .get(function () {
     return this.prefix;
@@ -68,6 +73,10 @@ prefixipv4Schema.virtual("text")
     return this.prefix + "  " + this.description;
   });
   
+  prefixipv4Schema.virtual("title")
+  .get(function () {
+    return this.prefix + "  " + this.description;
+  });
 
 prefixipv4Schema.set('toJSON', {
   virtuals: true

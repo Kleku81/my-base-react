@@ -3,12 +3,58 @@
 const PrefixIpv4 = require("../models/prefixIpv4"),
     helper = require("../helpers/validate"),
     ip = require('ip');
+    const { checkPrefixes } =require("../helpers/addRacurentionIpv4");
     //fs = require('fs');
+
+    function delay(t, v) {
+        return new Promise(function (resolve) {
+            setTimeout(resolve.bind(null, v), t)
+        });
+    }
 
 module.exports =  {
     
 
     //saveAddress: async (line) => {
+
+
+        saveline_v2: async (sline, array_tree, array_fail_result, dbName) => {
+            try {
+    
+                var prefix = new PrefixIpv4({
+                    prefix: sline[0],
+                    mask: helper.takeMask(sline[0]),
+                    parent: "#",
+                    dbName: dbName,
+                    description: sline[4],
+                    tag: sline[3]
+    
+                    //description3: sline[5],
+                    //description4: sline[6],
+                    //description5: sline[7]
+                    //created_by: "5ed290a15fa2630114f61162"
+                });                         
+                prefix.children = [];
+    
+                checkPrefixes(prefix, array_tree, "#");
+    
+                return delay(0, sline);
+    
+            }
+    
+            catch (err) {
+                //items_create = array_all.filter(obj => obj.create == true); 
+                //items_create.forEach(obj => obj.save()); 
+                //console.log(line + ";" + err.message);
+                console.log(err.message);
+                array_fail_result.push(sline[0] + " => " + err.message)
+                return new Promise((resolve, reject) => reject(sline[0] + " => " + err.message))
+                //return [err.message];
+    
+            }
+    
+    
+        },
 
     saveAddress:  async (line, dbName) => {
 

@@ -6,31 +6,33 @@ const PrefixIpv6 = db.prefixIpv6;
 const url = require('url');
 const fs = require('fs');
 const prefixDAO = require("../dao/prefixIpv4");
+const prefixIpv4DAO = require("../dao/prefixIpv4");
 const prefixIpv6DAO = require("../dao/prefixIpv6");
 const uuid = require('uuid-random');
 const deleteIpv4 = require("../helpers/deleteIpv4");
 const deleteIpv6 = require("../helpers/deleteIpv6");
 const { check, oneOf, validationResult } = require('express-validator');
-const helper = require("../helpers/validate")
+const { sortSourceIpv4, sortSourceIpv6, generateList, listFailToFile } = require("../helpers/validate")
 const ip6addr = require('ip6addr')
 const LTT = require('list-to-tree');
 const { addressIpv6Validation } = require('../validations/validationPrefixIpv6');
+const { addressIpv4Validation } = require('../validations/validationPrefixIpv4');
 
 
-const sortSourceIpv6 = (a, b) => {
+// const sortSourceIpv6 = (a, b) => {
 
 
-  a = a.prefix_full.split(/[\:,\/]/)
-    .map((value) => parseInt(value, 16));
-  b = b.prefix_full.split(/[\:,\/]/)
-    .map((value) => parseInt(value, 16));
+//   a = a.prefix_full.split(/[\:,\/]/)
+//     .map((value) => parseInt(value, 16));
+//   b = b.prefix_full.split(/[\:,\/]/)
+//     .map((value) => parseInt(value, 16));
 
 
 
-  return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] || a[5] - b[5] || a[6] - b[6] || a[7] - b[7]
+//   return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] || a[5] - b[5] || a[6] - b[6] || a[7] - b[7]
 
 
-}
+// }
 
 const logIter = async (iter) => {
   console.log(iter)
@@ -69,24 +71,27 @@ function list_to_tree(list) {
   }
 }
 
-const generateList = (data, ids) => {
-  for (let i = 0; i < data.length; i++) {
-    const node = data[i];
-    const { _id } = node;
-    ids.push(_id);
-    if (node.children.length > 0) {
-      generateList(node.children, ids);
-    }
-  }
-}
+// const generateList = (data, ids) => {
+//   for (let i = 0; i < data.length; i++) {
+//     const node = data[i];
+//     const { _id } = node;
+//     ids.push(_id);
+//     if (node.children.length > 0) {
+//       generateList(node.children, ids);
+//     }
+//   }
+// }
 
-const writeAll = async (array_all, array_fail_result, io, only_one) => {
+const writeAll = async (array_all, ipVer) => {
   try {
     const items_create = array_all.filter(obj => obj.created == true);
     let i = 0;
     console.log("zapisywanie created");
     if (items_create.length > 0)
-      await PrefixIpv6.insertMany(items_create)
+      if (ipVer == "ipv4")
+        await PrefixIpv4.insertMany(items_create)
+      else if (ipVer == "ipv6")
+        await PrefixIpv6.insertMany(items_create)
     // items_create.forEach(obj => {
     //   i++;
     //   return obj.save().catch(err => {console.log(err); throw err})
@@ -101,8 +106,8 @@ const writeAll = async (array_all, array_fail_result, io, only_one) => {
     console.log("zapisywanie updated");
     if (items_update.length > 0) {
       promises = items_update.map(obj => {
-        // if (obj.prefix === "fd15:f100:f0f::/56")
-        //   throw "bład przy update fd15:f100:f0f::/56 "
+        // if (obj.prefix === "fda9:b700:1000::/56")
+        //   throw "bład przy update fda9:b700:1000::/56 "
         // i++;
         return obj.save()
       });
@@ -112,39 +117,10 @@ const writeAll = async (array_all, array_fail_result, io, only_one) => {
     }
     //await Promise.all(promises);
     console.log(" Przetwarzanie po promise ALL ");
+    return items_create.length;
 
     //items_update.forEach(obj =>  PrefixIpv6.findByIdAndUpdate({_id:"6009d9528ca0291c0cc425d8"}, {parent: obj._doc.parent})); 
-    if (!only_one) {
-      // io.emit("loading", (99));
 
-      // loading = false;
-      // console.log("loading = " + loading);
-
-      // const raport_uuid = helper.listFailToFile(array_fail_result)
-      // var raport_uuid = uuid();
-      // var raport_path = "./upload/" + raport_uuid + ".txt";
-
-      // var file = fs.createWriteStream(raport_path);
-      // file.on('error', function (err) { console.log("nie mogę znaleźć ../uploads/") });
-      // array_fail_result && array_fail_result.forEach(function (v) { file.write(v); });
-      // file.end();
-
-      // var myBox = {
-      //   uuid: raport_uuid,
-      //   lines: lines.length,
-      //   success: items_create.length
-
-      // }
-
-
-
-      // io.emit("loading_done", myBox);
-
-
-      // return items_create.length;
-
-      // res.status(200).send(`Zapisano na serwerze plik ${req.file.filename}.`);
-    }
   } catch (err) {
 
     console.log(err)
@@ -155,41 +131,41 @@ const writeAll = async (array_all, array_fail_result, io, only_one) => {
 }
 
 
-const addressValidation = (slines, array_all, array_fail_result) => {
+// const addressValidationIpv6 = (slines, array_all, array_fail_result) => {
 
-  if (!helper.ipv6RegExp(sline[0])) {
+//   if (!helper.ipv6RegExp(sline[0])) {
 
-    array_fail_result.push(sline[0] + " => " + 'Niepoprawny adres IPv6!')
-    //break;
-    //i_line ++;
-    return false;
-    //throw new Error('Linia zawiera niepoprawny adres IPv6!');
-  }
+//     array_fail_result.push(sline[0] + " => " + 'Niepoprawny adres IPv6!')
+//     //break;
+//     //i_line ++;
+//     return false;
+//     //throw new Error('Linia zawiera niepoprawny adres IPv6!');
+//   }
 
-  if (!helper.ipCidrTest(sline[0], "ipv6")) {
+//   if (!helper.ipCidrTest(sline[0], "ipv6")) {
 
-    array_fail_result.push(line + " => " + 'Niepoprawny CIDR IPv6!')
-    //break; 
-    //i_line ++;
-    return false;
-    //throw new Error('Linia zawiera niepoprawny CIDR IPv6!');
-  }
-  if (array_all.filter(obj => obj.prefix == ip6addr.createCIDR(sline[0]).toString({ format: 'v6' })).length == 1) {
+//     array_fail_result.push(line + " => " + 'Niepoprawny CIDR IPv6!')
+//     //break; 
+//     //i_line ++;
+//     return false;
+//     //throw new Error('Linia zawiera niepoprawny CIDR IPv6!');
+//   }
+//   if (array_all.filter(obj => obj.prefix == ip6addr.createCIDR(sline[0]).toString({ format: 'v6' })).length == 1) {
 
-    array_fail_result.push(sline[0] + " => " + 'Ten prefix juz istnieje')
-    //break; 
-    //i_line ++;
-    //i_line++;
-    //console.log(i_line);
-    //io.emit("loading", ((i_line / array_file.length) * 100)*0.9);
-    return false;
-    //throw new Error('Linia zawiera niepoprawny CIDR IPv6!');
-  }
+//     array_fail_result.push(sline[0] + " => " + 'Ten prefix juz istnieje')
+//     //break; 
+//     //i_line ++;
+//     //i_line++;
+//     //console.log(i_line);
+//     //io.emit("loading", ((i_line / array_file.length) * 100)*0.9);
+//     return false;
+//     //throw new Error('Linia zawiera niepoprawny CIDR IPv6!');
+//   }
 
-  return true;
+//   return true;
 
 
-}
+// }
 
 
 
@@ -258,8 +234,8 @@ module.exports = io => {
       }
       // console.log(req.body.file.filename);
 
-      io.emit("loading_start", "test emit loading data");
-      io.emit("loading_stop", 100);
+      io.emit("validating");
+      //io.emit("loading_stop", 100);
 
 
       //socket.emit("FromAPI", i++);
@@ -309,7 +285,209 @@ module.exports = io => {
 
   }
 
+
   controler.importload_new_v2 = async (req, res, next) => {
+    try {
+      var lines = await fs.readFileSync(`./upload/${req.file.filename}`, 'utf-8')
+        .split('\n')
+        .filter(Boolean);
+
+      const lines_length = lines.length;
+
+      var array_all;
+      let array_fail_result = [];
+      if (req.body.ipVer == "ipv4") {
+        array_all = await PrefixIpv4.find({ "dbName": req.body.dbName });
+        array_all = array_all.sort(sortSourceIpv4)
+        addressIpv4Validation(lines, array_all, array_fail_result);
+      }
+      else if (req.body.ipVer == "ipv6") {
+        array_all = await PrefixIpv6.find({ "dbName": req.body.dbName });
+        array_all = array_all.sort(sortSourceIpv6)
+        //io.emit("validating", 0);
+        addressIpv6Validation(lines, array_all, array_fail_result);
+        io.emit("loading_start");
+      }
+      array_all = list_to_tree(array_all);
+      var i_line = 0;
+
+
+      // const iteracjaIpv4 = () =>  prefixIpv4DAO.saveline_v2(lines[i_line].replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName, io)
+      //   .then(() => {
+      //     i_line++;
+      //     if (i_line < lines.length) {
+
+      //       var load_progress = 0.9 * (i_line / lines_length) * 100;
+      //       io.emit("loading", load_progress)
+      //       //prefixIpv6DAO.saveLine(lines[i_line].replace(/"/g, "").split(";"),array_all,array_fail_result,req.body.dbName) 
+      //       iteracjaIpv4()
+      //     }
+      //     else {
+      //       //console.log("Załadowan wszystkie !!!")
+
+      //       //var end_iteracja = Date.now();
+      //       //console.log(` Execution iteracja: ${end_iteracja - start_iteracja} ms`);
+      //       const list_to_write = []
+      //       generateList(array_all, list_to_write);
+      //       //console.log(`list to write = ${list_to_write}`)
+
+
+
+
+      //     }
+      //   })
+      //   .then(() => {
+      //     const list_to_write = []
+      //     generateList(array_all, list_to_write);
+      //     return writeAll(list_to_write, req.body.ipVer);
+      //   }).then(result => {
+
+
+
+      //     // if(!only_one){
+      //     io.emit("loading", (99));
+
+      //     //loading = false;
+      //     //console.log("loading = " + loading);
+
+      //     const raport_uuid = listFailToFile(array_fail_result)
+      //     // var raport_uuid = uuid();
+      //     // var raport_path = "./upload/" + raport_uuid + ".txt";
+
+      //     // var file = fs.createWriteStream(raport_path);
+      //     // file.on('error', function (err) { console.log("nie mogę znaleźć ../uploads/") });
+      //     // array_fail_result && array_fail_result.forEach(function (v) { file.write(v); });
+      //     // file.end();
+
+      //     var myBox = {
+      //       uuid: raport_uuid,
+      //       lines: lines_length,
+      //       success: result
+
+      //     }
+
+      //     io.emit("loading_done", myBox);
+
+      //     res.status(200).send(`Zapisano na serwerze plik ${req.file.filename}.`);
+      //   }).catch((err) => {
+      //     //console.log(err)
+      //     //console.log("Proble with loadig prefixes to DB. Error:" + err.message);
+      //     err.message = "Proble with loadig prefixes to DB. Error:" + err.message;
+      //     return res.status(500).send(err.message);
+      //     //throw err
+      //   });
+
+
+        const iteracjaIpv4 = async  () => {
+
+          for(let iter = 0 ; iter <  lines.length; iter++)
+          {
+  
+          await prefixIpv4DAO.saveline_v2(lines[iter].replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName, io);
+          var load_progress = 0.9 * (iter / lines_length) * 100;
+          io.emit("loading", load_progress)
+       
+            }
+  
+          }
+
+
+      const iteracjaIpv6 = async  () => {
+
+        for(let iter = 0 ; iter <  lines.length; iter++)
+        {
+
+        await prefixIpv6DAO.saveline_v2(lines[iter].replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName, io);
+        var load_progress = 0.9 * (iter / lines_length) * 100;
+        io.emit("loading", load_progress)
+     
+          }
+
+        }
+
+
+
+      var start_iteracja = Date.now();
+      //console.log(` i = ${i}; Execution time in while: ${end_in - start_in} ms`);
+      if (lines.length > 0) {
+
+        if (req.body.ipVer == "ipv4")
+          await iteracjaIpv4();
+        else if (req.body.ipVer == "ipv6")
+         await  iteracjaIpv6();
+        else
+          throw "Nieporawna wartość ipVer."
+      }
+      else {
+        const raport_uuid = listFailToFile(array_fail_result);
+        var myBox = {
+          uuid: raport_uuid,
+          lines: lines_length,
+          success: 0
+
+        }
+
+        io.emit("loading_done", myBox);
+
+        res.status(200).send(`Zapisano na serwerze plik ${req.file.filename}.`);
+        return
+
+      }
+
+            // .then(() => {
+              const list_to_write = []
+              generateList(array_all, list_to_write);
+              return writeAll(list_to_write, req.body.ipVer)
+                .then(result => {
+        
+        
+        
+                  // if(!only_one){
+                  io.emit("loading", (99));
+        
+                  //loading = false;
+                  //console.log("loading = " + loading);
+        
+                  const raport_uuid = listFailToFile(array_fail_result)
+                  // var raport_uuid = uuid();
+                  // var raport_path = "./upload/" + raport_uuid + ".txt";
+        
+                  // var file = fs.createWriteStream(raport_path);
+                  // file.on('error', function (err) { console.log("nie mogę znaleźć ../uploads/") });
+                  // array_fail_result && array_fail_result.forEach(function (v) { file.write(v); });
+                  // file.end();
+        
+                  var myBox = {
+                    uuid: raport_uuid,
+                    lines: lines_length,
+                    success: result
+        
+                  }
+        
+                  io.emit("loading_done", myBox);
+        
+                  res.status(200).send(`Zapisano na serwerze plik ${req.file.filename}.`);
+                }).catch((err) => {
+                  //console.log(err)
+                  //console.log("Proble with loadig prefixes to DB. Error:" + err.message);
+                  err.message = "Proble with loadig prefixes to DB. Error:" + err.message;
+                  return res.status(500).send(err.message);
+                  //throw err
+                });
+
+    } catch (err) {
+
+      loading = false;
+      console.log("Problem with loadig prefixes to DB. Error:" + err.message);
+      return res.status(500).send(err.message);
+
+    }
+
+  }
+
+
+
+  controler.importloadIpv6_new_v2 = async (req, res, next) => {
     try {
       var lines = await fs.readFileSync(`./upload/${req.file.filename}`, 'utf-8')
         .split('\n')
@@ -322,34 +500,6 @@ module.exports = io => {
       addressIpv6Validation(lines, array_all, array_fail_result);
       array_all = list_to_tree(array_all);
       var i_line = 0;
-
-
-
-      // for (let line of lines) {
-
-      //   line = line.replace(/"/g, "");
-      //   var sline = line.split(";");
-
-      //   if(addressValidation(sline,array_all,array_fail_result) == false) {
-
-      //     i_line++;
-
-      //     //await logIter(i_line); 
-      //     //var tets_io = await io.emit("loading"); 
-      //     //console.log(i_line);
-
-      //     // new Promise(resolve => {
-      //        io.emit("loading");
-      //     //   });
-
-      //     //setImmediate(() => io.emit("loading"));
-      //     //setTimeout(io.emit("loading", ((i_line / lines.length) * 100)*0.9), 3);
-      //     //console.log(process._getActiveRequests());
-      //     //console.log(process._getActiveHandles());
-
-      //     continue; 
-      // }
-
 
 
 
@@ -369,17 +519,17 @@ module.exports = io => {
             //var end_iteracja = Date.now();
             //console.log(` Execution iteracja: ${end_iteracja - start_iteracja} ms`);
             const list_to_write = []
-            helper.generateList(array_all, list_to_write);
+            generateList(array_all, list_to_write);
             //console.log(`list to write = ${list_to_write}`)
-            
 
-            
+
+
 
           }
         })
-        .then(() =>{ 
+        .then(() => {
           const list_to_write = []
-          helper.generateList(array_all, list_to_write);
+          generateList(array_all, list_to_write);
           return writeAll(list_to_write, array_fail_result, io);
         }).then(result => {
 
@@ -391,7 +541,7 @@ module.exports = io => {
           //loading = false;
           //console.log("loading = " + loading);
 
-          const raport_uuid = helper.listFailToFile(array_fail_result)
+          const raport_uuid = listFailToFile(array_fail_result)
           // var raport_uuid = uuid();
           // var raport_path = "./upload/" + raport_uuid + ".txt";
 
@@ -413,7 +563,7 @@ module.exports = io => {
         }).catch((err) => {
           //console.log(err)
           //console.log("Proble with loadig prefixes to DB. Error:" + err.message);
-          err.message = "Proble with loadig prefixes to DB. Error:" + err.message; 
+          err.message = "Proble with loadig prefixes to DB. Error:" + err.message;
           return res.status(500).send(err.message);
           //throw err
         });
@@ -423,7 +573,7 @@ module.exports = io => {
       if (lines.length > 0)
         iteracja();
       else {
-        const raport_uuid = helper.listFailToFile(array_fail_result);
+        const raport_uuid = listFailToFile(array_fail_result);
         var myBox = {
           uuid: raport_uuid,
           lines: lines_length,
@@ -437,27 +587,6 @@ module.exports = io => {
 
       }
 
-
-
-
-      //await logIter(i_line); 
-      //console.log(i_line);
-      //var tets_io1 = await io.emit("loading"); 
-
-      // new Promise(resolve => {
-      //   io.emit("loading");
-      //   });
-      //setImmediate(() => io.emit("loading"));
-      //setTimeout(io.emit("loading", ((i_line / lines.length) * 100)*0.9), 3);
-      //console.log(process._getActiveRequests());
-      //console.log(process._getActiveHandles());
-      //} 
-
-      /////////////////////////////////////
-      //===================================
-
-
-      //===================================
     } catch (err) {
 
       loading = false;
@@ -611,7 +740,7 @@ module.exports = io => {
           //.map(x => x = toClient1(x))
           .then(prefixes => {
             //console.log(prefixes.toJson());
-            res.locals.prefixes = prefixes.sort(sortSourceIpv6);
+            res.locals.prefixes = prefixes.sort(sortSourceIpv4);
             //res.locals.tbjson = testjson;
             next();
           })
@@ -1035,7 +1164,7 @@ module.exports = io => {
         let list_to_write = [];
         prefixIpv6DAO.saveline_v2(`${req.body.prefix.trim()};;;${req.body.description.trim()};${req.body.tag.trim()};;;;`.replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName, io)
           .then(() => {
-            helper.generateList(array_all, list_to_write);
+            generateList(array_all, list_to_write);
             //console.log(`list to write = ${list_to_write}`)
             writeAll(list_to_write, io, true)
 

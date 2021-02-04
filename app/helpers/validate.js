@@ -39,6 +39,40 @@ const sortSourceIpv6 = (a, b) => {
 
 }
 
+
+const sortSourceIpv4Prefixes = (a, b) => {
+
+    a = a.split(/[\.,\/]/)
+        .map((value) => parseInt(value));
+    b = b.split(/[\.,\/]/)
+        .map((value) => parseInt(value));
+
+    return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] 
+
+}
+
+const sortSourceIpv6Prefixes = (a, b) => {
+
+    a = a.split(/[\:,\/]/)
+        .map((value) => parseInt(value, 16));
+    b = b.split(/[\:,\/]/)
+        .map((value) => parseInt(value, 16));
+
+    return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] || a[5] - b[5] || a[6] - b[6] || a[7] - b[7] || a[8] - b[8]
+
+}
+
+const sortSourceIpv4 = (a, b) => {
+
+    a = a.prefix.split(/[\.,\/]/)
+        .map((value) => parseInt(value));
+    b = b.prefix.split(/[\.,\/]/)
+        .map((value) => parseInt(value));
+
+    return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] 
+
+}
+
 const generateList1 =  (data,dataList) => {
 
     //const dataList = [];
@@ -142,7 +176,20 @@ module.exports = {
         return roots;
       },
 
-      sortedIndex:(array, prefix) => {
+      sortedIndexIpv4:(array, prefix) => {
+        var low = 0,
+            high = array.length;
+    
+        while (low < high) {
+            var mid = (low + high) >>> 1;
+            if (sortSourceIpv4(array[mid],prefix) < 0) low = mid + 1;
+            else high = mid;
+        }
+        return low;
+    },
+
+    
+    sortedIndexIpv6:(array, prefix) => {
         var low = 0,
             high = array.length;
     
@@ -152,6 +199,38 @@ module.exports = {
             else high = mid;
         }
         return low;
+    },
+
+    checkExistanceIpv4:(array, prefix) => {
+        var low = 0,
+            high = array.length;
+    
+        while (low < high) {
+            var mid = (low + high) >>> 1;
+            if(sortSourceIpv4Prefixes(array[mid].prefix,prefix) == 0)
+            {
+                return true
+            }
+            if (sortSourceIpv4Prefixes(array[mid].prefix,prefix) < 0) low = mid + 1;
+            else high = mid;
+        }
+        return false;
+    },
+
+    checkExistanceIpv6:(array, prefix) => {
+        var low = 0,
+            high = array.length;
+    
+        while (low < high) {
+            var mid = (low + high) >>> 1;
+            if(sortSourceIpv6Prefixes(array[mid].prefix_full,ip6addr.createCIDR(prefix).toString({ zeroElide: false, zeroPad: true })) == 0)
+            {
+                return true
+            }
+            if (sortSourceIpv6Prefixes(array[mid].prefix_full,ip6addr.createCIDR(prefix).toString({ zeroElide: false, zeroPad: true })) < 0) low = mid + 1;
+            else high = mid;
+        }
+        return false;
     },
 
 
@@ -185,7 +264,30 @@ module.exports = {
 
 
 
-      }
+      },
+
+      sortSourceIpv6: (a, b) => {
+
+        a = a.prefix_full.split(/[\:,\/]/)
+            .map((value) => parseInt(value, 16));
+        b = b.prefix_full.split(/[\:,\/]/)
+            .map((value) => parseInt(value, 16));
+    
+        return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] || a[5] - b[5] || a[6] - b[6] || a[7] - b[7] || a[8] - b[8]
+    
+    },
+    sortSourceIpv4: (a, b) => {
+
+        a = a.prefix.split(/[\.,\/]/)
+            .map(value => parseInt(value));
+        b = b.prefix.split(/[\.,\/]/)
+            .map(value => parseInt(value));
+    
+        return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] 
+    
+    }
+
+
 }
 
 console.log("module validate finish loading"); 
