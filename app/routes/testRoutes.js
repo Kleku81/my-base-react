@@ -5,6 +5,7 @@ const { body, check, oneOf, validationResult } = require('express-validator');
 //const PrefixIpv4 = require("../models/prefixIpv4.js");
 //const PrefixIpv6 = require("../models/prefixIpv6.js");
 const {ipCidrTest, existsPrefix } = require("../helpers/validate");
+const { verifySignUp } = require("../middlewares");
 
 
 module.exports = (io) => {
@@ -12,7 +13,16 @@ module.exports = (io) => {
   const controller = require("../controllers/user.controller")(io);
 
   router.get("/all", controller.allAccess);
-  router.get("/user", [authJwt.verifyToken], controller.userBoard);
+  router.get("/user", /*[authJwt.verifyToken],*/ controller.userBoard);
+  router.post("/user", [
+    verifySignUp.checkDuplicateUsernameOrEmail,
+    verifySignUp.checkRolesExisted
+  ], controller.createUser);
+
+  router.patch("/user", [verifySignUp.checkRolesExisted], controller.editUser);
+
+  router.delete("/user", controller.deleteUser);
+
   router.get(
     "/mod",
     [authJwt.verifyToken, authJwt.isModerator],
@@ -49,7 +59,9 @@ module.exports = (io) => {
 
   router.post('/upload',[authJwt.verifyToken, authJwt.isModerator], controller.upload, controller.importload_new_v2);
   router.post('/dbs',[authJwt.verifyToken, authJwt.isModerator], controller.addDbs);
-  router.get('/dbs',[authJwt.verifyToken] ,controller.getDbs);
+  router.get('/dbs'/*,[authJwt.verifyToken]*/ ,controller.getDbs);
+  router.patch('/dbs',[authJwt.verifyToken, authJwt.isModerator], controller.editDbs);
+  router.delete('/dbs',[authJwt.verifyToken, authJwt.isModerator], controller.deleteDbs);
   router.get('/tree',/*[authJwt.verifyToken],*/ controller.json, controller.showView);
   router.get('/raport/:id',[authJwt.verifyToken],  controller.raportDownload);
   router.patch('/multiedit',[authJwt.verifyToken, authJwt.isModerator],controller.multiupdate);
