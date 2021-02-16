@@ -305,7 +305,10 @@ module.exports = io => {
           update_obj = { ...update_obj, password }
         };
         User.update({ username: req.body.username }, update_obj)
-            .then(res.send({ message: "User was registered successfully!" }))
+            .then((response) => { 
+              console.log(response)
+              res.send({ message: "User was registered successfully!" })
+            })
             .catch(err => {
               console.log(err)
               res.status(500).send({ message: err })
