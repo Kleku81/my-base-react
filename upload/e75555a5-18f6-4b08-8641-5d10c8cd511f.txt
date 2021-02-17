@@ -1,1 +1,0 @@
-fd15:f100:f0f:::/56 => Niepoprawny adres IPv6!

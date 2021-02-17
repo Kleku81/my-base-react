@@ -1,6 +1,0 @@
-"fd15:f100:0f0f:166e::/64";"Nie";"";"";"sieć ULA 0f0f:166e";"ULA";"";""----> Not added. Reason:Cannot read property 'prefix' of undefined
-"fd15:f100:0f0f:166f::/64";"Nie";"";"";"sieć ULA 0f0f:166f";"ULA";"";""----> Not added. Reason:Cannot read property 'prefix' of undefined
-"fd15:f100:0f0f:1670::/64";"Nie";"";"";"sieć ULA 0f0f:1670";"ULA";"";""----> Not added. Reason:Cannot read property 'prefix' of undefined
-"fd15:f100:0f0f:1671::/64";"Nie";"";"";"sieć ULA 0f0f:1671";"ULA";"";""----> Not added. Reason:Cannot read property 'prefix' of undefined
-"fd15:f100:0f0f:1672::/64";"Nie";"";"";"sieć ULA 0f0f:1672";"ULA";"";""----> Not added. Reason:Cannot read property 'prefix' of undefined
-"fd15:f100:0f0f:1673::/64";"Nie";"";"";"sieć ULA 0f0f:1673";"ULA";"";""----> Not added. Reason:Cannot read property 'prefix' of undefined

@@ -1,1 +1,0 @@
-fd15:f100:f0f::/52 => Ten prefix juz istnieje 

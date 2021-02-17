@@ -1,4 +1,0 @@
-2a01::/32;Nie;;test1/8;test----> Not added. Reason:Linia zawiera niepoprawny adres IPv4!
-2a01::/48;Nie;;test1/16;test----> Not added. Reason:Linia zawiera niepoprawny adres IPv4!
-2a01::/64;Nie;;test1/24;test----> Not added. Reason:Linia zawiera niepoprawny adres IPv4!
-2a01::/120;Nie;;test1/32;test----> Not added. Reason:Linia zawiera niepoprawny adres IPv4!

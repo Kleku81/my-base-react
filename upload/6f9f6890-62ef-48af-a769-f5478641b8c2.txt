@@ -1,1 +1,0 @@
-fda9:b700:1000::/53 => Ten prefix juz istnieje 

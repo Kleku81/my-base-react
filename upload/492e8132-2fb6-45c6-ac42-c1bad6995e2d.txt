@@ -1,1 +1,0 @@
-"fd15:f100:0f0f:536d::/64";"Nie";"";"";"sieć ULA 0f0f:536d";"ULA";"";""----> Not added. Reason:end_teke is not defined

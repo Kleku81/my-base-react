@@ -1,5 +1,0 @@
-1.0.0.0/8;Nie;;test1/8;test;;----> Not added. Reason:E11000 duplicate key error collection: bezkoder_db.prefixipv4 index: prefix_1_dbName_1 dup key: { prefix: "1.0.0.0/8", dbName: "22" }
-1.1.0.0/16;Nie;;test1/16;test;;----> Not added. Reason:E11000 duplicate key error collection: bezkoder_db.prefixipv4 index: prefix_1_dbName_1 dup key: { prefix: "1.1.0.0/16", dbName: "22" }
-1.1.1.0/24;Nie;;test1/24;test;;----> Not added. Reason:E11000 duplicate key error collection: bezkoder_db.prefixipv4 index: prefix_1_dbName_1 dup key: { prefix: "1.1.1.0/24", dbName: "22" }
-1.1.1.1/32;Nie;;test1/32;test;;----> Not added. Reason:E11000 duplicate key error collection: bezkoder_db.prefixipv4 index: prefix_1_dbName_1 dup key: { prefix: "1.1.1.1/32", dbName: "22" }
-----> Not added. Reason:Linia zawiera niepoprawny adres IPv4!

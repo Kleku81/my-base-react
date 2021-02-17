@@ -1,1 +1,0 @@
-"fd15:f100:0f0f:000e::/64";"Nie";"";"";"sieć ULA 0f0f:000e";"ULA";"";""----> Not added. Reason:Cannot read property 'prefix_full' of undefined

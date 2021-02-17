@@ -5,6 +5,7 @@ const PrefixIpv4 = db.prefixIpv4;
 const PrefixIpv6 = db.prefixIpv6;
 const url = require('url');
 const fs = require('fs');
+const { join } = require('path');
 const prefixDAO = require("../dao/prefixIpv4");
 const prefixIpv4DAO = require("../dao/prefixIpv4");
 const prefixIpv6DAO = require("../dao/prefixIpv6");
@@ -20,9 +21,11 @@ const { addressIpv4Validation } = require('../validations/validationPrefixIpv4')
 var bcrypt = require("bcryptjs");
 const { user } = require('../models');
 const { response } = require('express');
+var archiver = require('archiver');
 //const db = require("../models");
 const User = db.user;
 const Role = db.role;
+//const  archive = archiver('zip');
 
 
 // const sortSourceIpv6 = (a, b) => {
@@ -913,6 +916,73 @@ module.exports = io => {
     }
     ///
 
+    controler.backupDbs = async (req, res) => {
+
+      try{
+
+        const  archive = archiver('zip');
+
+        const path = "./backup"
+        const output = fs.createWriteStream('./upload/backup.zip');
+        output.on('close', function () {
+          console.log(archive.pointer() + ' total bytes');
+          console.log('archiver has been finalized and the output file descriptor has closed.');
+      });
+      
+      archive.on('error', function(err){
+          throw err;
+      });
+
+
+        fs.readdirSync(path)
+          .map(name => join(path, name))
+          .map(file => fs.unlinkSync(file));
+
+        //console.log(process.cwd());
+        //console.log(req.body);
+        var base;
+        for(let i = 0; i< req.body.length; i++) {
+
+          var obj = req.body[i]
+        
+        if(obj.type == "ipv4")
+        {
+         base =   await PrefixIpv4.find({"dbName": obj.subType})
+        }
+        else if(obj.type == "ipv6")
+        {
+         base =  await PrefixIpv6.find({"dbName": obj.subType})
+        }
+
+
+
+        var file = fs.createWriteStream("./backup/"+ obj.subType+ "_" + obj.type );
+        file.on('error', function (err) { console.log("nie mogę znaleźć ../uploads/") });
+        base.length>0 && base.forEach(function (v) { file.write(`${v.prefix};${v.description};${v.tag};\n`); });
+        //file.write("test");
+        file.end();
+        }
+
+        archive.pipe(output);
+        archive.directory(path, false);
+        archive.finalize();
+        
+        console.log("test")
+        res.status(200).send("ok")
+
+
+
+      }
+      catch (err) {
+        console.log(err.message);
+        res.status(500).send(err.message);
+
+      }
+
+
+
+    }
+
 
     controler.addDbs = (req, res) => {
       try {
@@ -1161,6 +1231,12 @@ module.exports = io => {
     controler.raportDownload = (req, res) => {
       let filename = req.params.id;
       const file = `${__dirname}/../../upload/` + filename;
+      res.download(file);
+    }
+
+    controler.backupDownload = (req, res) => {
+      //let filename = req.params.id;
+      const file = `${__dirname}/../../upload/backup.zip`;
       res.download(file);
     }
 

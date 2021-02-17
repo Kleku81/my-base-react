@@ -38,7 +38,7 @@ DbPrefixSchema.virtual("title")
 
 DbPrefixSchema.virtual("key")
   .get(function () {
-    return this.subType;
+    return this.subType+this.type;
   });
 
 DbPrefixSchema.set('toJSON', {

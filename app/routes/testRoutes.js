@@ -59,6 +59,9 @@ module.exports = (io) => {
 
   router.post('/upload',[authJwt.verifyToken, authJwt.isModerator], controller.upload, controller.importload_new_v2);
   router.post('/dbs',[authJwt.verifyToken, authJwt.isModerator], controller.addDbs);
+  router.post('/backupdbs',[authJwt.verifyToken, authJwt.isModerator], controller.backupDbs);
+  router.get('/backupdbs',[authJwt.verifyToken, authJwt.isModerator], controller.backupDownload);
+  
   router.get('/dbs'/*,[authJwt.verifyToken]*/ ,controller.getDbs);
   router.patch('/dbs',[authJwt.verifyToken, authJwt.isModerator], controller.editDbs);
   router.delete('/dbs',[authJwt.verifyToken, authJwt.isModerator], controller.deleteDbs);
