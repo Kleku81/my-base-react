@@ -75,7 +75,7 @@ const addressIpv6Validation = (slines, array_all, array_fail_result, io) => {
                 for (let j = i + 1; j < slines.length; j++) {
 
                     const sline1 = slines[j].replace(/"/g, "").split(";")
-                    const test1 = ip6addr.createCIDR(prefix.toString({ zeroElide: false, zeroPad: true }))
+                    const test1 = ip6addr.createCIDR(prefix).toString({ zeroElide: false, zeroPad: true })
                     const test2 = ip6addr.createCIDR(sline1[0]).toString({ zeroElide: false, zeroPad: true })
 
                     if ( test1 == test2 ) {
