@@ -423,6 +423,7 @@ module.exports = io => {
           array_all = await PrefixIpv4.find({ "dbName": req.body.dbName });
           array_all = array_all.sort(sortSourceIpv4)
           addressIpv4Validation(lines, array_all, array_fail_result);
+          io.emit("loading_start");
         }
         else if (req.body.ipVer == "ipv6") {
           array_all = await PrefixIpv6.find({ "dbName": req.body.dbName });
@@ -1100,9 +1101,11 @@ module.exports = io => {
           .catch(err => res.status(500).send(err.message)) 
 
         }
+        else
+        {
 
         res.send({ message: `Nie odnaleziono bazy ${req.body.subType}` })
-        
+        }
       
 
       }

@@ -1,0 +1,4 @@
+fda9:b700::/24 => Niepoprawny adres IPv6! 
+fda9:b700:0000::/24 => Niepoprawny adres IPv6! 
+ => Niepoprawny adres IPv6! 
+fda9:b700:0000:0000::/24 => Niepoprawny adres IPv6! 

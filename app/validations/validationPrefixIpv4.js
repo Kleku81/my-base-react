@@ -7,6 +7,12 @@ const addressIpv4Validation = (slines, array_all, array_fail_result) => {
 
         for (let i = 0; i < slines.length; i++) {
 
+            if (!slines[i]) {
+                slines.splice(i, 1)
+                i--;
+                continue;
+            }
+
             const sline = slines[i].replace(/"/g, "").split(";")
 
 
@@ -32,7 +38,7 @@ const addressIpv4Validation = (slines, array_all, array_fail_result) => {
                 //throw new Error('Linia zawiera niepoprawny CIDR IPv6!');
             }
             //if (array_all.filter(obj => obj.prefix == sline[0]).length == 1) {
-                if (helper.checkExistanceIpv4(array_all, sline[0])){
+            if (helper.checkExistanceIpv4(array_all, sline[0])) {
 
                 array_fail_result.push(sline[0] + " => " + 'Ten prefix juz istnieje')
                 //break; 
@@ -47,6 +53,34 @@ const addressIpv4Validation = (slines, array_all, array_fail_result) => {
             }
 
         }
+
+        for (let i = 0; i < slines.length; i++) {
+            const sline = slines[i].replace(/"/g, "").split(";")
+
+            const checkduplicationInFile = (prefix, slines) => {
+                for (let j = i + 1; j < slines.length; j++) {
+
+                    const sline1 = slines[j].replace(/"/g, "").split(";")
+                    //const test1 = ip6addr.createCIDR(prefix.toString({ zeroElide: false, zeroPad: true }))
+                    //const test2 = ip6addr.createCIDR(sline1[0]).toString({ zeroElide: false, zeroPad: true })
+
+                    if ( prefix == sline1[0] ) {
+
+                        array_fail_result.push(sline1[0] + " => " + 'Duplikacja prefix w pliku')
+                        slines.splice(j, 1)
+                        //i--;
+                        j--;
+                    }
+
+                }
+
+
+            }
+
+            checkduplicationInFile(sline[0], slines);
+        }
+
+
         return true;
     } catch (err) {
 
