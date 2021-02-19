@@ -68,31 +68,31 @@ const addressIpv6Validation = (slines, array_all, array_fail_result, io) => {
 
         }
 
-        for (let i = 0; i < slines.length; i++) {
-            const sline = slines[i].replace(/"/g, "").split(";")
+        // for (let i = 0; i < slines.length; i++) {
+        //     const sline = slines[i].replace(/"/g, "").split(";")
 
-            const checkduplicationInFile = (prefix, slines) => {
-                for (let j = i + 1; j < slines.length; j++) {
+        //     const checkduplicationInFile = (prefix, slines) => {
+        //         for (let j = i + 1; j < slines.length; j++) {
 
-                    const sline1 = slines[j].replace(/"/g, "").split(";")
-                    const test1 = ip6addr.createCIDR(prefix).toString({ zeroElide: false, zeroPad: true })
-                    const test2 = ip6addr.createCIDR(sline1[0]).toString({ zeroElide: false, zeroPad: true })
+        //             const sline1 = slines[j].replace(/"/g, "").split(";")
+        //             const test1 = ip6addr.createCIDR(prefix).toString({ zeroElide: false, zeroPad: true })
+        //             const test2 = ip6addr.createCIDR(sline1[0]).toString({ zeroElide: false, zeroPad: true })
 
-                    if ( test1 == test2 ) {
+        //             if ( test1 == test2 ) {
 
-                        array_fail_result.push(sline1[0] + " => " + 'Duplikacja prefix w pliku')
-                        slines.splice(j, 1)
-                        //i--;
-                        j--;
-                    }
+        //                 array_fail_result.push(sline1[0] + " => " + 'Duplikacja prefix w pliku')
+        //                 slines.splice(j, 1)
+        //                 //i--;
+        //                 j--;
+        //             }
 
-                }
+        //         }
 
 
-            }
+        //     }
 
-            checkduplicationInFile(sline[0], slines);
-        }
+        //     checkduplicationInFile(sline[0], slines);
+        // }
         return true;
     } catch (err) {
 
