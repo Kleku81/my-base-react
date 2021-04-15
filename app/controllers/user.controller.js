@@ -196,7 +196,8 @@ var storage = multer.diskStorage({
 var uploadmulter = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (file.name.substr(-3) == "csv") {
+    console.log(file)
+    if (file.originalname.substr(-3) == "csv") {
       cb(null, true);
     } else {
       cb(null, false);
