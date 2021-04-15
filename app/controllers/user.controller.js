@@ -196,7 +196,7 @@ var storage = multer.diskStorage({
 var uploadmulter = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype == "application/vnd.ms-excel") {
+    if (file.name.substr(-3) == "csv") {
       cb(null, true);
     } else {
       cb(null, false);
