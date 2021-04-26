@@ -1442,7 +1442,7 @@ module.exports = io => {
         }
         else {
 
-          prefixDAO.saveAddress(`${req.body.prefix.trim()};;;${req.body.description.trim()};${req.body.tag.trim()};;;;`, req.body.dbName);
+          prefixDAO.saveAddress(`${req.body.prefix.trim()};;;${req.body.tag.trim()};${req.body.description.trim()};;;;`, req.body.dbName);
           res.send({
             status: true,
             message: 'Prefixes updated!!!'
@@ -1481,11 +1481,11 @@ module.exports = io => {
           array_all = list_to_tree(array_all);
           let array_fail_result = [];
           let list_to_write = [];
-          prefixIpv6DAO.saveline_v2(`${req.body.prefix.trim()};;;${req.body.description.trim()};${req.body.tag.trim()};;;;`.replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName, io)
+          prefixIpv6DAO.saveline_v2(`${req.body.prefix.trim()};;;${req.body.tag.trim()};${req.body.description.trim()};;;;`.replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName, io)
             .then(() => {
               generateList(array_all, list_to_write);
               //console.log(`list to write = ${list_to_write}`)
-              writeAll(list_to_write, io, true)
+              writeAll(list_to_write, "ipv6")
 
               res.send({
                 status: true,
