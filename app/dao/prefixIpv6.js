@@ -339,10 +339,10 @@ module.exports = {
 
     },
 
-    saveline_v2: async (sline, array_tree, array_fail_result, dbName) => {
+    saveline_v2: async (sline, array_tree, array_fail_result, dbName, formatFile) => {
         try {
 
-            var prefix = new PrefixIpv6({
+            var prefix = formatFile == "old" ? new PrefixIpv6({
                 prefix: ip6addr.createCIDR(sline[0]).toString({ format: 'v6' }),
                 prefix_full: ip6addr.createCIDR(sline[0]).toString({ zeroElide: false, zeroPad: true })
                 //  .split(/[\:,\/]/)
@@ -354,6 +354,25 @@ module.exports = {
                 dbName: dbName,
                 description: sline[4],
                 tag: sline[3]
+
+                //description3: sline[5],
+                //description4: sline[6],
+                //description5: sline[7]
+                //created_by: "5ed290a15fa2630114f61162"
+            }):
+            
+            new PrefixIpv6({
+                prefix: ip6addr.createCIDR(sline[0]).toString({ format: 'v6' }),
+                prefix_full: ip6addr.createCIDR(sline[0]).toString({ zeroElide: false, zeroPad: true })
+                //  .split(/[\:,\/]/)
+                //  .map((value) => parseInt(value, 16))
+                //  .join(":")
+                ,
+                mask: helper.takeMask(sline[0]),
+                parent: "#",
+                dbName: dbName,
+                description: sline[1],
+                tag: sline[2]
 
                 //description3: sline[5],
                 //description4: sline[6],

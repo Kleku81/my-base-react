@@ -18,10 +18,10 @@ module.exports =  {
     //saveAddress: async (line) => {
 
 
-        saveline_v2: async (sline, array_tree, array_fail_result, dbName) => {
+        saveline_v2: async (sline, array_tree, array_fail_result, dbName, formatFile) => {
             try {
     
-                var prefix = new PrefixIpv4({
+                var prefix = formatFile == "old" ? new PrefixIpv4({
                     prefix: sline[0],
                     mask: helper.takeMask(sline[0]),
                     parent: "#",
@@ -33,7 +33,19 @@ module.exports =  {
                     //description4: sline[6],
                     //description5: sline[7]
                     //created_by: "5ed290a15fa2630114f61162"
-                });                         
+                }): new PrefixIpv4({
+                    prefix: sline[0],
+                    mask: helper.takeMask(sline[0]),
+                    parent: "#",
+                    dbName: dbName,
+                    description: sline[1],
+                    tag: sline[2]
+    
+                    //description3: sline[5],
+                    //description4: sline[6],
+                    //description5: sline[7]
+                    //created_by: "5ed290a15fa2630114f61162"
+                }) ;                         
                 prefix.children = [];
     
                 checkPrefixes(prefix, array_tree, "#");

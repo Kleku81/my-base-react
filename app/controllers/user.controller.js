@@ -507,7 +507,7 @@ module.exports = io => {
 
           for (let iter = 0; iter < lines.length; iter++) {
 
-            await prefixIpv4DAO.saveline_v2(lines[iter].replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName, io);
+            await prefixIpv4DAO.saveline_v2(lines[iter].replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName,req.body.formatFile, io);
             var load_progress = 0.9 * (iter / lines_length) * 100;
             io.emit("loading", load_progress)
 
@@ -520,7 +520,7 @@ module.exports = io => {
 
           for (let iter = 0; iter < lines.length; iter++) {
 
-            await prefixIpv6DAO.saveline_v2(lines[iter].replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName, io);
+            await prefixIpv6DAO.saveline_v2(lines[iter].replace(/"/g, "").split(";"), array_all, array_fail_result, req.body.dbName,req.body.formatFile, io);
             var load_progress = 0.9 * (iter / lines_length) * 100;
             io.emit("loading", load_progress)
 
@@ -958,7 +958,7 @@ module.exports = io => {
 
 
 
-        var file = fs.createWriteStream("./backup/"+ obj.subType+ "_" + obj.type );
+        var file = fs.createWriteStream("./backup/"+ obj.subType+ "_" + obj.type +".csv" );
         file.on('error', function (err) { console.log("nie mogę znaleźć ../uploads/") });
         base.length>0 && base.forEach(function (v) { file.write(`${v.prefix};${v.description};${v.tag};\n`); });
         //file.write("test");
